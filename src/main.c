@@ -3,6 +3,7 @@
 #include <pthread.h>
 #include <time.h>
 
+#include "../include/metrics.h"
 #include "../include/pcb.h"
 #include "../include/queue.h"
 #include "../include/sync.h"
@@ -16,6 +17,7 @@ int main() {
     ready_queue_t queue;
 
     init_queue(&queue);
+    init_metrics();
 
 // Generador de hilos
     pthread_t generator_thread;

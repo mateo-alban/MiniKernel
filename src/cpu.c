@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <time.h>
 
+#include "../include/metrics.h"
 #include "../include/pcb.h"
 #include "../include/queue.h"
 #include "../include/sync.h"
@@ -70,6 +71,27 @@ void* cpu_worker(void* arg) {
 
         process->state = RUNNING;
 
+// Registrar primera ejecución
+if(!process->has_started) {
+
+    process->first_run_time =
+        time(NULL);
+
+    process->has_started = 1;
+
+    int response_time =
+        process->first_run_time
+        - process->arrival_time;
+
+    printf(
+        "[METRICS] PID=%d "
+        "Response Time=%d sec\n",
+
+        process->pid,
+        response_time
+    );
+}
+        
         printf(
             "\n[CPU] Running PID=%d "
             "Remaining=%d\n",
@@ -86,29 +108,39 @@ void* cpu_worker(void* arg) {
         // Verificar si terminó
         if(process->remaining_time <= 0) {
 
-            process->state = TERMINATED;
+         process->state = TERMINATED;
+
+         process->completion_time =
+            time(NULL);
+
+         int turnaround_time =
+
+        process->completion_time
+        - process->arrival_time;
+
+         printf(
+            "[CPU] Process %d finished\n",
+             process->pid
+         );
 
             printf(
-                "[CPU] Process %d finished\n",
-                process->pid
-            );
+             "[METRICS] PID=%d "
+            "Turnaround=%d sec\n",
 
+             process->pid,
+            turnaround_time
+             );
+            register_completed_process();
+
+            print_throughput();
+            
             free(process);
-        }
-        else {
+        }else {
 
-            process->state = READY;
+        process->state = READY;
 
-            printf(
-                "[CPU] Process %d paused "
-                "Remaining=%d\n",
-
-                process->pid,
-                process->remaining_time
-            );
-
-            // Volver a ready queue
-            enqueue(queue, process);
+         // Volver a ready queue
+         enqueue(queue, process);
         }
     }
 
