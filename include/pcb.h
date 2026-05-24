@@ -14,7 +14,7 @@ typedef struct {
 
     int burst_time; // Tiempo total del CPU
 
-    int reamining_time; // Tiempo restante
+    int remaining_time; // Tiempo restante
 
     int priority; // Prioridad
 

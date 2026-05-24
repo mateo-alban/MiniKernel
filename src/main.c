@@ -1,69 +1,58 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
+#include <time.h>
 
 #include "../include/pcb.h"
 #include "../include/queue.h"
+#include "../include/sync.h"
+
+#define N_CPUS 2
 
 int main() {
 
-    // Crear cola ready
+    srand(time(NULL));
+
     ready_queue_t queue;
 
     init_queue(&queue);
 
-// Creo procesos de prueba
+// Generador de hilos
+    pthread_t generator_thread;
 
-    pcb_t* p1 = malloc(sizeof(pcb_t));
+    pthread_create(
+        &generator_thread,
+        NULL,
+        process_generator,
+        &queue
+    );
 
-    pcb_t* p2 = malloc(sizeof(pcb_t));
+// CPU simulado
+    pthread_t cpu_threads[N_CPUS];
 
-    pcb_t* p3 = malloc(sizeof(pcb_t));
+    for(int i = 0; i < N_CPUS; i++) {
 
-// Inicializo procesos
+        pthread_create(
+            &cpu_threads[i],
+            NULL,
+            cpu_worker,
+            &queue
+        );
+    }
 
-    p1->pid = 1;
-    p1->burst_time = 5;
+// Espera los hilos
+    pthread_join(
+        generator_thread,
+        NULL
+    );
 
-    p2->pid = 2;
-    p2->burst_time = 8;
+    for(int i = 0; i < N_CPUS; i++) {
 
-    p3->pid = 3;
-    p3->burst_time = 3;
-
-// Insertar en la cola
-
-    enqueue(&queue, p1);
-
-    enqueue(&queue, p2);
-
-    enqueue(&queue, p3);
-
-// Saco procesos
-
-    pcb_t* process;
-
-    process = dequeue(&queue);
-
-    printf("Running process %d\n",
-           process->pid);
-
-    process = dequeue(&queue);
-
-    printf("Running process %d\n",
-           process->pid);
-
-    process = dequeue(&queue);
-
-    printf("Running process %d\n",
-           process->pid);
-
-// Libero memoria
-
-    free(p1);
-
-    free(p2);
-
-    free(p3);
+        pthread_join(
+            cpu_threads[i],
+            NULL
+        );
+    }
 
     return 0;
 }
