@@ -12,15 +12,15 @@ typedef enum{
 
 typedef struct {
 
-    int pid;
+    int pid; // identificador del proceso
 
-    int burst_time;
+    int burst_time; // Tiempo de uso del CPU del proceso
 
-    int remaining_time;
+    int remaining_time; // Tiempo restante de uso
 
-    int priority;
+    int priority; // Prioridad de proceso
 
-    int arrival_time;
+    int arrival_time; // Momento de llegada del prceso
 
     process_state_t state;
 

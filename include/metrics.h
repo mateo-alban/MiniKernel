@@ -13,10 +13,10 @@ extern time_t system_start_time;
 // Mutex para métricas
 extern pthread_mutex_t metrics_mutex;
 
-// Inicializar métricas
+// Inicializa métricas
 void init_metrics();
 
-// Registrar proceso completado
+// Registro proceso completado
 void register_completed_process();
 
 // Mostrar throughput

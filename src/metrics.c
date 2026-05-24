@@ -19,53 +19,32 @@ void init_metrics() {
     system_start_time =
         time(NULL);
 
-    pthread_mutex_init(
-        &metrics_mutex,
-        NULL
-    );
+    pthread_mutex_init( &metrics_mutex, NULL);
 }
 
 // Registrar proceso completado
 void register_completed_process() {
 
-    pthread_mutex_lock(
-        &metrics_mutex
-    );
+    pthread_mutex_lock(&metrics_mutex);
 
     completed_processes++;
 
-    pthread_mutex_unlock(
-        &metrics_mutex
-    );
+    pthread_mutex_unlock(&metrics_mutex);
 }
 
 // Mostrar throughput
 void print_throughput() {
 
-    time_t current_time =
-        time(NULL);
+    time_t current_time =  time(NULL);
 
-    double elapsed_time =
-
-        difftime(
-            current_time,
-            system_start_time
-        );
+    double elapsed_time = difftime( current_time, system_start_time);
 
     if(elapsed_time <= 0) {
 
         elapsed_time = 1;
     }
 
-    double throughput =
+    double throughput = completed_processes / elapsed_time;
 
-        completed_processes
-        / elapsed_time;
-
-    printf(
-        "[METRICS] Throughput = "
-        "%.2f processes/sec\n",
-
-        throughput
-    );
+    printf("[METRICS] Throughput = " "%.2f processes/sec\n", throughput);
 }
